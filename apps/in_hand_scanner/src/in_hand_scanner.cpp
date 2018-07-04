@@ -51,7 +51,7 @@
 #include <pcl/exceptions.h>
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
-#include <pcl/io/openni_grabber.h>
+//#include <pcl/io/openni_grabber.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/geometry/get_boundary.h>
@@ -382,7 +382,10 @@ pcl::ihs::InHandScanner::newDataCallback (const CloudXYZRGBAConstPtr& cloud_in)
   time_model = sw.getTime ();
 
   sw.reset ();
+  if(cloud_data->isOrganized ())
+  {
   Base::addMesh (cloud_data , "data"); // Converts to a mesh for visualization
+  }
 
   if (running_mode_ < RM_REGISTRATION_CONT && cloud_discarded)
   {

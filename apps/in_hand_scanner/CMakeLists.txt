@@ -23,13 +23,13 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 #OpenNI
-if(NOT WITH_OPENNI)
-    set(DEFAULT AUTO_OFF)
-    set(REASON "OpenNI was not found or was disabled by the user.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-    set(DEFAULT TRUE)
-    set(REASON)
-endif()
+#if(NOT WITH_OPENNI)
+#    set(DEFAULT AUTO_OFF)
+#    set(REASON "OpenNI was not found or was disabled by the user.")
+#elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
+#    set(DEFAULT TRUE)
+#    set(REASON)
+#endif()
 
 # Default to not building for now
 if (${DEFAULT} STREQUAL "TRUE")

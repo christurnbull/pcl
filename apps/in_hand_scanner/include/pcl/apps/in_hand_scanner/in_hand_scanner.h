@@ -41,6 +41,15 @@
 #ifndef PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
 #define PCL_APPS_IN_HAND_SCANNER_IN_HAND_SCANNER_H
 
+#ifdef foreach
+  #undef foreach
+#endif
+#include <pcl/io/real_sense_2_grabber.h>
+#ifdef foreach
+  #undef foreach
+#endif
+#include <QApplication>
+
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -209,7 +218,12 @@ namespace pcl
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
 
+	/*
         typedef pcl::OpenNIGrabber                Grabber;
+        typedef boost::shared_ptr <Grabber>       GrabberPtr;
+        typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
+	*/
+	typedef pcl::RealSense2Grabber		Grabber;
         typedef boost::shared_ptr <Grabber>       GrabberPtr;
         typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
 

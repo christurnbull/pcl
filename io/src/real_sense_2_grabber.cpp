@@ -59,8 +59,8 @@ namespace pcl
     , quit_ ( false )
     , running_ ( false )
     , fps_ ( 0 )
-    , device_width_ ( 424 )
-    , device_height_ ( 240 )
+    , device_width_ ( 1280 )
+    , device_height_ ( 720 )
     , target_fps_ ( 30 )
   {
   }
@@ -129,14 +129,14 @@ namespace pcl
 
     assert ( prof.get_stream ( RS2_STREAM_DEPTH ).format () == RS2_FORMAT_Z16 );
 
-    thread_ = std::thread ( &RealSense2Grabber::threadFunction, this );
+    thread_ = boost::thread ( &RealSense2Grabber::threadFunction, this );
 
   }
 
   void
   RealSense2Grabber::stop ()
   {
-    std::lock_guard<std::mutex> guard ( mutex_ );
+    boost::lock_guard<boost::mutex> guard ( mutex_ );
 
     running_ = false;
     quit_ = true;
@@ -168,14 +168,19 @@ namespace pcl
     while (!quit_)
     {
       sw.reset ();
+      
+      auto frames = pipe_.wait_for_frames ();
+      auto depth = frames.get_depth_frame ();
+      auto rgb = frames.get_color_frame ();
+      auto ir = frames.get_infrared_frame ();
 
-      rs2::depth_frame depth = nullptr;
-      rs2::video_frame rgb = nullptr;
-      rs2::video_frame ir = nullptr;
+//      rs2::depth_frame depth = nullptr;
+//      rs2::video_frame rgb = nullptr;
+//      rs2::video_frame ir = nullptr;
       rs2::points points;
 
       {
-        std::lock_guard<std::mutex> guard ( mutex_ );
+        boost::lock_guard<boost::mutex> guard ( mutex_ );
 
         // Wait for the next set of frames from the camera
         auto frames = pipe_.wait_for_frames ();
@@ -186,6 +191,10 @@ namespace pcl
         {
           ir = frames.get_infrared_frame ();
         }
+        
+        // Tell pointcloud object to map to this color frame
+        // THIS MUST BE CALLED BEFORE pc_.calculate()
+        pc_.map_to ( rgb );
 
         // Generate the pointcloud and texture mappings
         points = pc_.calculate ( depth );
@@ -193,9 +202,6 @@ namespace pcl
         if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
         {
           rgb = frames.get_color_frame ();
-
-          // Tell pointcloud object to map to this color frame
-          pc_.map_to ( rgb );
         }
 
       }
